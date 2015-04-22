@@ -1,6 +1,21 @@
-<p class="payment_module">
-	<a href="{$link->getModuleLink('futubank', 'payment')|escape:'html'}" title="{l s='Pay by Futubank' mod='futubank'}">
-		<img src="{$this_path_bw}futubank.png" alt="{l s='Pay by Futubank' mod='futubank'}" width="86" height="49" />
-		{l s='Pay by Futubank' mod='futubank'}</span>
-	</a>
-</p>
+<style>
+	p.payment_module > a.futubank {
+		/* background-image: url({$logo});*/
+		background-position: 15px 50%;
+		background-repeat: no-repeat;
+	}
+</style>
+
+<div class="row">
+	<div class="col-xs-12">
+		<p class="payment_module">
+			<a href="javascript:void(0)" onclick="javascript:document.getElementById('futubank_form').submit();" title="{l s='Pay by Futubank' mod='futubank'}" class="bankwire futubank">
+				{l s='Pay by Futubank' mod='futubank'}</span>
+			</a>
+		</p>
+	</div>
+</div>
+
+<form class="hidden" id="futubank_form" method="post" name="futubank_form" action="{$action}">
+{$form_fields}
+</form>
