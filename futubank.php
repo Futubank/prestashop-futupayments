@@ -5,7 +5,74 @@ if (!defined('_PS_VERSION_'))
 
 require_once(dirname(__FILE__).'/lib/futubank_core.php');
 	
-	
+
+class FutubankPaymentCallback extends AbstractFutubankCallbackHandler
+{
+	private $module;
+	private $cart;
+
+	public function __construct(Futubank $module) 
+	{
+		$this->module = $module;
+	}
+
+	protected function get_futubank_form()
+	{
+		return $this->module->getFutubankForm();
+	}
+
+	protected function load_order($order_id)
+	{
+		if (!$this->cart) {
+			$this->cart = new Cart(intval($order_id));
+		}
+
+		return $this->cart;
+	}
+
+	protected function get_order_currency($order)
+	{
+		$currency = new Currency(intval($order->id_currency));
+		return $currency->iso_code;
+	}
+
+	protected function get_order_amount($order)
+	{
+		return $order->getOrderTotal(true);
+	}
+
+	protected function is_order_completed($order)
+	{
+		# TODO!
+		return false;
+	}
+
+	protected function mark_order_as_completed($order, array $data)
+	{
+		// $customer = new Customer(intval($order->id_customer));
+
+		$this->module->validateOrder(
+			$order->id, 
+			Configuration::get('PS_OS_PAYMENT'),
+			(float) $data['amount'],
+			$this->module->displayName,
+			null,
+			array(),
+			null, 
+			false,
+			$order->secure_key
+		);
+
+		return true;
+	}
+
+	protected function mark_order_as_error($order, array $data)
+	{
+		return true;
+	}
+}
+
+
 class Futubank extends PaymentModule
 {
 	public function __construct()
@@ -19,7 +86,7 @@ class Futubank extends PaymentModule
 		$this->bootstrap = true;
 		
 		$this->currencies = true;
-		$this->currencies_mode = 'checkbox';
+		$this->currencies_mode = 'radio';
 		
 		parent::__construct();
 		
@@ -58,6 +125,20 @@ class Futubank extends PaymentModule
 		return parent::uninstall();
 	}
 	
+	
+	public function checkCurrency($cart)
+	{
+		$currency_order = new Currency($cart->id_currency);
+		$currencies_module = $this->getCurrency($cart->id_currency);
+
+		if (is_array($currencies_module))
+			foreach ($currencies_module as $currency_module)
+				if ($currency_order->id == $currency_module['id_currency'])
+					return true;
+		return false;
+	}
+
+
 	public function getContent()
 	{
 		$output = null;
@@ -153,21 +234,28 @@ class Futubank extends PaymentModule
 		
 		return $helper->generateForm($fields_form);
 	}
-		
 	
-	public function hookPayment($params) 
+	public function getFutubankForm()
 	{
-		if (!$this->active)
-			return;
-			
-		$ff = new FutubankForm(
+		return new FutubankForm(
 			Configuration::get('FUTUBANK_MERCHANT_ID'),
 			Configuration::get('FUTUBANK_SECRET_KEY'),
 			Configuration::get('FUTUBANK_TEST_MODE')
 		);
+	}
+
+	public function hookPayment($params) 
+	{
+		if (!$this->active)
+			return;
+		
+		if (!$this->checkCurrency($params['cart']))
+			return;
+
+		$ff = $this->getFutubankForm();
 
 		$currency = new Currency(intval($params['cart']->id_currency));
-		$amount = number_format(Tools::convertPrice($params['cart']->getOrderTotal(true, Cart::BOTH), $currency), 2, '.', '');
+		// $amount = number_format(Tools::convertPrice($params['cart']->getOrderTotal(true, Cart::BOTH), $currency), 2, '.', '');
 		$amount = $params['cart']->getOrderTotal(true);
 		$order_id = intval($params['cart']->id);
 
@@ -182,7 +270,7 @@ class Futubank extends PaymentModule
 		$cancel_url = 'http://' . htmlspecialchars($_SERVER['HTTP_HOST'], ENT_COMPAT,
             'UTF-8') . __PS_BASE_URI__ . 'index.php';
 
-		$currency_code = ($currency->iso_code == 'RUB') ? 'RUR' : $currency->iso_code;
+		$currency_code = ($currency->iso_code == 'RUR') ? 'RUB' : $currency->iso_code;
 
 		$form = $ff->compose(
 			$amount,
@@ -205,5 +293,21 @@ class Futubank extends PaymentModule
 		));
 		
 		return $this->display(__FILE__, 'payment.tpl');		
+	}
+
+
+	public function validation()
+	{
+		// $cart = $this->context->cart;
+		if ($_POST) {
+			foreach($_POST as $k => $v) {
+				$response[$k] = stripslashes($v);
+			}
+
+			$cb = new FutubankPaymentCallback($this);
+			$cb->show($_POST);
+		} else {
+			echo "It works!";
+		}
 	}
 }
