@@ -23,7 +23,7 @@ class FutubankPaymentCallback extends AbstractFutubankCallbackHandler
 
 	protected function load_order($order_id)
 	{
-		if (!$this->cart) {
+		if (!isset($this->cart)) {
 			$this->cart = new Cart(intval($order_id));
 		}
 
@@ -49,16 +49,14 @@ class FutubankPaymentCallback extends AbstractFutubankCallbackHandler
 
 	protected function mark_order_as_completed($order, array $data)
 	{
-		// $customer = new Customer(intval($order->id_customer));
-
 		$this->module->validateOrder(
 			$order->id, 
 			Configuration::get('PS_OS_PAYMENT'),
 			(float) $data['amount'],
 			$this->module->displayName,
-			null,
+			$this->module->displayName.' payment successfully',
 			array(),
-			null, 
+			$order->id_currency,
 			false,
 			$order->secure_key
 		);
@@ -249,9 +247,6 @@ class Futubank extends PaymentModule
 		if (!$this->active)
 			return;
 		
-		if (!$this->checkCurrency($params['cart']))
-			return;
-
 		$ff = $this->getFutubankForm();
 
 		$currency = new Currency(intval($params['cart']->id_currency));
