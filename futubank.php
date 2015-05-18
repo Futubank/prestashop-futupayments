@@ -265,6 +265,9 @@ class Futubank extends PaymentModule
 		$cancel_url = 'http://' . htmlspecialchars($_SERVER['HTTP_HOST'], ENT_COMPAT,
             'UTF-8') . __PS_BASE_URI__ . 'index.php';
 
+		$success_url = $this->context->link->getModuleLink($this->name, 'success');
+		$fail_url = $this->context->link->getModuleLink($this->name, 'fail');
+
 		$currency_code = ($currency->iso_code == 'RUR') ? 'RUB' : $currency->iso_code;
 
 		$form = $ff->compose(
@@ -274,8 +277,8 @@ class Futubank extends PaymentModule
 			$customer->email,
 			$customer->firstname . ' ' . $customer->lastname,
 			$address->phone_mobile,
-			'https://secure.futubank.com/success/',
-			'https://secure.futubank.com/fail/',
+			$success_url,
+			$fail_url,
 			$cancel_url
 		);
 
@@ -288,6 +291,24 @@ class Futubank extends PaymentModule
 		));
 		
 		return $this->display(__FILE__, 'payment.tpl');		
+	}
+
+
+	public function hookDisplayPaymentReturn($params)
+	{
+		if (!$this->active)
+			return;
+
+		if (!$order=$params['objOrder'])
+			return;
+
+		if ($this->context->cookie->id_customer!=$order->id_customer)
+			return;
+
+		if (!$order->hasBeenPaid())
+			return;
+
+		return $this->display(__FILE__, 'paymentReturn.tpl');
 	}
 
 
