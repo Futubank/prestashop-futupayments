@@ -1,6 +1,5 @@
 <style>
 	p.payment_module > a.futubank {
-		/* background-image: url({$logo});*/
 		background-position: 15px 50%;
 		background-repeat: no-repeat;
 	}
@@ -9,8 +8,8 @@
 <div class="row">
 	<div class="col-xs-12">
 		<p class="payment_module">
-			<a href="javascript:void(0)" onclick="javascript:document.getElementById('futubank_form').submit();" title="{l s='Pay by Futubank' mod='futubank'}" class="bankwire futubank">
-				{l s='Pay by Futubank' mod='futubank'}</span>
+			<a href="javascript:void(0)" onclick="javascript:document.getElementById('futubank_form').submit();" title="{l s='Оплата банковской картой' mod='futubank'}" class="bankwire futubank">
+				{l s='Оплата банковской картой' mod='futubank'}</span>
 			</a>
 		</p>
 	</div>

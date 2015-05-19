@@ -89,13 +89,13 @@ class Futubank extends PaymentModule
 		parent::__construct();
 		
 		$this->displayName = $this->l('Futubank');
-		$this->description = $this->l('Accept payments for your products via futubank.com');	
+		$this->description = $this->l('Прием платежей через futubank.com');	
 		
 		if (!Configuration::get('FUTUBANK_MERCHANT_ID'))
-			$this->warning = $this->l('Please, fill the field MERCHANT_ID');
+			$this->warning = $this->l('Пожалуйста, заполните MERCHANT_ID');
 			
 		if (!Configuration::get('FUTUBANK_SECRET_KEY'))
-			$this->warning = $this->l('Please, fill the field SECRET_KEY');
+			$this->warning = $this->l('Пожалуйста, заполните SECRET_KEY');
 	}
 	
 	
@@ -147,7 +147,7 @@ class Futubank extends PaymentModule
 			Configuration::updateValue('FUTUBANK_SECRET_KEY', Tools::getValue('FUTUBANK_SECRET_KEY'));
 			Configuration::updateValue('FUTUBANK_TEST_MODE', Tools::getValue('FUTUBANK_TEST_MODE'));
 			
-			$output .= $this->displayConfirmation($this->l('Settings updated'));
+			$output .= $this->displayConfirmation($this->l('Настройки сохранены.'));
 		}
 		
 		return $output.$this->renderForm();
@@ -159,7 +159,7 @@ class Futubank extends PaymentModule
 		
 		$fields_form[0]['form'] = array(
 			'legend' => array(
-				'title' => $this->l('Settings'),
+				'title' => $this->l('Настройки Futubank'),
 				'icon' => 'icon-cogs'
 			),
 			'input' => array(
@@ -167,35 +167,37 @@ class Futubank extends PaymentModule
 					'type' => 'text',
 					'label' => $this->l('Merchant ID'),
 					'name' => 'FUTUBANK_MERCHANT_ID',
+					'desc' => $this->l('merchant_id из Личного кабинета Futubank (Панель управления > %Ваш Магазин% > Интеграция > Параметры подключения)'),
 					'required' => true
 				),
 				array(
 					'type' => 'text',
-					'label' => $this->l('Secret Key'),
+					'label' => $this->l('Secret key'),
 					'name' => 'FUTUBANK_SECRET_KEY',
+					'desc' => $this->l('secret_key из Личного кабинета Futubank (Панель управления > %Ваш Магазин% > Интеграция > Параметры подключения)'),
 					'required' => true
 				),
 				array(
 					'type' => 'switch',
-					'label' => $this->l('Test Mode'),
+					'label' => $this->l('Тестовый режим'),
 					'name' => 'FUTUBANK_TEST_MODE',
 					'is_bool' => true,
 					'values' => array(
 						array(
 							'id' => 'active_on',
 							'value' => 1,
-							'label' => $this->l('On')
+							'label' => $this->l('Включен')
 						),
 						array(
 							'id' => 'active_off',
 							'value' => 0,
-							'label' => $this->l('Off')
+							'label' => $this->l('Выключен')
 						)
 					)
 				)
 			),			
 			'submit' => array(
-				'title' => $this->l('Save')
+				'title' => $this->l('Сохранить')
 			)
 		);
 		
@@ -216,12 +218,12 @@ class Futubank extends PaymentModule
 		$helper->toolbar_scroll = true;
 		$helper->toolbar_btn = array(
 			'save' => array(
-				'desc' => $this->l('Save'),
+				'desc' => $this->l('Сохранить'),
 				'href' => AdminController::$currentIndex.'&configure='.$this->name.'&save'.$this->name.
 					'&token'.Tools::getAdminTokenLite('AdminModules')
 			),
 			'back' => array(
-				'desc' => $this->l('Back to list'),
+				'desc' => $this->l('Назад'),
 				'href' => AdminController::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminModules')
 			)
 		);
@@ -314,7 +316,6 @@ class Futubank extends PaymentModule
 
 	public function validation()
 	{
-		// $cart = $this->context->cart;
 		if ($_POST) {
 			foreach($_POST as $k => $v) {
 				$response[$k] = stripslashes($v);
