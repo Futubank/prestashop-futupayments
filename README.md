@@ -1,8 +1,9 @@
 # prestashop-futupayments
-Prestashop payment module. Allow to accept payments via Futubank.com payment system
 
-## Installation ##
+Модуль оплаты для Prestashop CMS. Позволяет принимать онлайн-платежи в вашем интернет-магазине.
 
-1. Create folder __futubank__ in prestashop _modules_ directory.
-1. Download archive from https://github.com/Futubank/prestashop-futupayments/archive/master.zip and extract them into newly created folder.
-1. Go to prestashop admin at "Modules > Payment > View all available payments solutions" and click "Install" near __Futubank__ module.
+## Установка ##
+
+1. Создайте папку __futubank__ в корневой директории _modules_ вашего магазина prestashop.
+1. Скачайте архив https://github.com/Futubank/prestashop-futupayments/archive/master.zip и распакуйте его в только созданную папку.
+1. Зайдите в панель управления магазином на страницу "Модули - Оплата - Показать все доступные способы оплаты", найдите модуль __Futubank__ и нажмите кнопку "Установить".
