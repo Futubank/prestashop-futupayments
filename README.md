@@ -5,5 +5,5 @@
 ## Установка ##
 
 1. Создайте папку __futubank__ в корневой директории _modules_ вашего магазина prestashop.
-1. Скачайте архив https://github.com/Futubank/prestashop-futupayments/archive/master.zip и распакуйте его в только созданную папку.
+1. Скачайте архив https://github.com/Futubank/prestashop-futupayments/archive/master.zip и распакуйте его в созданную ранее папку.
 1. Зайдите в панель управления магазином на страницу "Модули - Оплата - Показать все доступные способы оплаты", найдите модуль __Futubank__ и нажмите кнопку "Установить".
